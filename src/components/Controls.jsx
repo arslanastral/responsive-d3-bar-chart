@@ -1,7 +1,13 @@
 import React from "react";
+import Button from "./Button";
 
 const Controls = () => {
-  return <div></div>;
+  return (
+    <div>
+      <Button />
+      <Button />
+    </div>
+  );
 };
 
 export default Controls;
