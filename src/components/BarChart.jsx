@@ -110,7 +110,7 @@ const BarChart = () => {
   return (
     <BarChartContainer>
       <Title>
-        World GDP in <span style={{ color: "blue" }}>$</span>
+        World {currentData.type} in <span style={{ color: "blue" }}>$</span>
       </Title>
       <br />
       <ChartSvg width={width} height={height} ref={GDPChart}>
