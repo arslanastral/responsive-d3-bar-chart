@@ -49,6 +49,32 @@ const BarChart = () => {
       .range([400, 0])
       .nice();
 
+    const xAxis = d3
+      .axisBottom(xTimeScale)
+      .ticks(10)
+      .tickSize(0)
+      .tickPadding(30);
+    svg
+      .select(".x-axis")
+      .style("transform", "translateY(400px)")
+      .attr("font-family", "Inter")
+      .attr("font-size", "1rem")
+      .attr("color", "grey")
+      .call(xAxis);
+
+    const yAxis = d3
+      .axisLeft(yScale)
+
+      .tickPadding(30)
+      .tickSize(-800)
+      .tickFormat((d) => " $" + d3.format(".1s")(d));
+    svg
+      .select(".y-axis")
+      .attr("font-family", "Inter")
+      .attr("font-size", "1rem")
+      .attr("color", "grey")
+      .call(yAxis);
+
     var myArea = d3
       .area()
       .x((value, index) => xScale(index))
