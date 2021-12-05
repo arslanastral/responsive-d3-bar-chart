@@ -27,6 +27,30 @@ const BarChart = () => {
   const height = 400;
 
   useEffect(() => {
+    const svg = d3.select(GDPChart.current);
+
+    const xScale = d3
+      .scaleTime()
+      .domain([0, data.length - 1])
+      .range([0, 800])
+      .nice();
+
+    const xTimeScale = d3
+      .scaleTime()
+      .domain([
+        d3.min(data.map((d) => d.Year)),
+        d3.max(data.map((d) => d.Year)),
+      ])
+      .range([0, 800]);
+
+    const yScale = d3
+      .scaleLinear()
+      .domain([0, d3.max(data.map((d) => d.GDP))])
+      .range([400, 0])
+      .nice();
+  }, [data]);
+
+  useEffect(() => {
     let parseDate = d3.timeParse("%Y");
     const row = (d) => {
       d.Year = parseDate(d.Year);
