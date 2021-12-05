@@ -32,7 +32,7 @@ const BarChart = () => {
     const xScale = d3
       .scaleTime()
       .domain([0, data.length - 1])
-      .range([0, 800])
+      .range([0, width])
       .nice();
 
     const xTimeScale = d3
@@ -41,12 +41,12 @@ const BarChart = () => {
         d3.min(data.map((d) => d.Year)),
         d3.max(data.map((d) => d.Year)),
       ])
-      .range([0, 800]);
+      .range([0, width]);
 
     const yScale = d3
       .scaleLinear()
       .domain([0, d3.max(data.map((d) => d.GDP))])
-      .range([400, 0])
+      .range([height, 0])
       .nice();
 
     const xAxis = d3
@@ -78,7 +78,7 @@ const BarChart = () => {
     var myArea = d3
       .area()
       .x((value, index) => xScale(index))
-      .y0(400)
+      .y0(height)
       .y1((value) => yScale(value.GDP))
       .curve(d3.curveCardinal);
 
@@ -117,9 +117,6 @@ const BarChart = () => {
         <g className="x-axis" />
         <g className="y-axis" />
       </ChartSvg>
-      <br />
-      <br />
-      <br />
     </BarChartContainer>
   );
 };
