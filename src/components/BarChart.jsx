@@ -23,6 +23,9 @@ const BarChart = () => {
   const { data, setData, currentData } = useContext(BarChartContext);
   const GDPChart = useRef();
 
+  const width = 800;
+  const height = 400;
+
   useEffect(() => {
     let parseDate = d3.timeParse("%Y");
     const row = (d) => {
@@ -44,7 +47,7 @@ const BarChart = () => {
         World GDP in <span style={{ color: "blue" }}>$</span>
       </Title>
       <br />
-      <ChartSvg width="800" height="400" ref={GDPChart}>
+      <ChartSvg width={width} height={height} ref={GDPChart}>
         <g className="x-axis" />
         <g className="y-axis" />
       </ChartSvg>
