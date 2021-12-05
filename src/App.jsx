@@ -31,12 +31,16 @@ const BarChartWrapper = React.memo(() => {
 });
 
 function BarChartProvider({ children }) {
-  const [currentData, setcurrentData] = useState([]);
-  const [dataType, setdataType] = useState("GDP");
+  const [data, setData] = useState([]);
+  const [currentData, setcurrentData] = useState({
+    type: "GDP",
+    URL:
+      "https://gist.githubusercontent.com/arslanastral/07260a81a2a1a0f6f811ac16f573e3bc/raw/93e7503fb0e3b807454094105565f695fb5c995b/world-gdp.csv",
+  });
 
   return (
     <BarChartContext.Provider
-      value={{ currentData, setcurrentData, dataType, setdataType }}
+      value={{ data, setData, currentData, setcurrentData }}
     >
       {children}
     </BarChartContext.Provider>
