@@ -48,6 +48,22 @@ const BarChart = () => {
       .domain([0, d3.max(data.map((d) => d.GDP))])
       .range([400, 0])
       .nice();
+
+    var myArea = d3
+      .area()
+      .x((value, index) => xScale(index))
+      .y0(400)
+      .y1((value) => yScale(value.GDP))
+      .curve(d3.curveCardinal);
+
+    svg
+      .selectAll(".area")
+      .data([data])
+      .join("path")
+      .attr("class", "area")
+      .transition()
+      .attr("d", myArea)
+      .attr("fill", "blue");
   }, [data]);
 
   useEffect(() => {
