@@ -40,7 +40,9 @@ const BarChart = () => {
 
   return (
     <BarChartContainer>
-      <Title></Title>
+      <Title>
+        World GDP in <span style={{ color: "blue" }}>$</span>
+      </Title>
       <br />
       <ChartSvg width="800" height="400" ref={GDPChart}>
         <g className="x-axis" />
