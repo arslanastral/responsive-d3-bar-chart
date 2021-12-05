@@ -21,6 +21,7 @@ const ChartSvg = styled.svg`
 
 const BarChart = () => {
   const { data, setData, currentData } = useContext(BarChartContext);
+  const GDPChart = useRef();
 
   useEffect(() => {
     let parseDate = d3.timeParse("%Y");
@@ -41,7 +42,7 @@ const BarChart = () => {
     <BarChartContainer>
       <Title></Title>
       <br />
-      <ChartSvg>
+      <ChartSvg width="800" height="400" ref={GDPChart}>
         <g className="x-axis" />
         <g className="y-axis" />
       </ChartSvg>
