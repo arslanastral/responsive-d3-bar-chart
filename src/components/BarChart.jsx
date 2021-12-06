@@ -100,9 +100,8 @@ const BarChart = () => {
       d.GDP = +d.GDP;
       return d;
     };
-
     d3.csv(currentData.URL, row).then(setData);
-  }, [currentData]);
+  }, [currentData, setData]);
 
   if (!data) {
     return <div>Loading...</div>;
