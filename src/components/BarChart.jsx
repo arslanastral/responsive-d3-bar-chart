@@ -51,8 +51,9 @@ const BarChart = () => {
 
     const xAxis = d3
       .axisBottom(xTimeScale)
+      .tickSizeOuter(0)
       .ticks(10)
-      .tickSize(0)
+      .tickSize(-400)
       .tickPadding(30);
     svg
       .select(".x-axis")
@@ -110,7 +111,7 @@ const BarChart = () => {
   return (
     <BarChartContainer>
       <Title>
-        World {currentData.type} in <span style={{ color: "blue" }}>$</span>
+        World <span style={{ color: "blue" }}>{currentData.type}</span> in $
       </Title>
       <br />
       <ChartSvg width={width} height={height} ref={GDPChart}>
