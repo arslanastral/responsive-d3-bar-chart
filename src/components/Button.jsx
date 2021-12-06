@@ -23,11 +23,24 @@ const DataButton = styled.button`
   }
 `;
 
-const Button = ({ type, url }) => {
-  const { setcurrentData } = React.useContext(BarChartContext);
+const Button = ({ type, url, isActive }) => {
+  const { setcurrentData, setdataSources, dataSources } = React.useContext(
+    BarChartContext
+  );
+
+  const handleButtonClick = () => {
+    setcurrentData({ type: type, URL: url });
+    setdataSources(
+      dataSources.map((ele) =>
+        ele.type === type
+          ? { ...ele, isActive: true }
+          : { ...ele, isActive: false }
+      )
+    );
+  };
 
   return (
-    <DataButton onClick={() => setcurrentData({ type: type, URL: url })}>
+    <DataButton isActive={isActive} onClick={handleButtonClick}>
       {type}
     </DataButton>
   );
