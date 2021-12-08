@@ -13,13 +13,19 @@ const DataButton = styled.button`
   padding: 10px;
   font-family: Inter;
 
+  cursor: pointer;
+  transition: transform ease-in 0.1s, box-shadow ease-in 0.25s;
+  box-shadow: ${({ isActive }) =>
+    isActive ? "0 2px 25px rgba(255, 0, 130, 0.5);" : "none"};
+
   &:hover {
     background-color: ${({ isActive }) => (isActive ? "blue" : "#f7f1f1")};
+    box-shadow: 0 2px 25px rgba(255, 0, 130, 0.5);
     color: ${({ isActive }) => (isActive ? "white" : "blue")};
   }
 
   &:active {
-    transform: scale(0.9);
+    transform: scale(0.85);
   }
 `;
 

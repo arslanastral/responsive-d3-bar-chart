@@ -10,6 +10,7 @@ const BarChartContainer = styled.div`
 
 const Title = styled.h1`
   font-family: "Playfair Display", serif;
+  transition: transform ease-in 0.1s;
   font-size: 3rem;
 `;
 
@@ -29,11 +30,17 @@ const BarChart = () => {
   useEffect(() => {
     const svg = d3.select(GDPChart.current);
 
+    // const xScale = d3
+    //   .scaleTime()
+    //   .domain([0, data.length - 1])
+    //   .range([0, width])
+    //   .nice();
+
     const xScale = d3
-      .scaleTime()
-      .domain([0, data.length - 1])
+      .scaleBand()
+      .domain(d3.range(data.length))
       .range([0, width])
-      .nice();
+      .padding(0.1);
 
     const xTimeScale = d3
       .scaleTime()
@@ -51,46 +58,73 @@ const BarChart = () => {
 
     const xAxis = d3
       .axisBottom(xTimeScale)
-      .tickSizeOuter(0)
-      .ticks(10)
-      .tickSize(-400)
+
       .tickPadding(30);
     svg
       .select(".x-axis")
       .style("transform", "translateY(400px)")
       .attr("font-family", "Inter")
       .attr("font-size", "1rem")
-      .attr("color", "grey")
+      .attr("color", "black")
       .call(xAxis);
 
     const yAxis = d3
       .axisLeft(yScale)
-
+      .ticks(7)
       .tickPadding(30)
-      .tickSize(-800)
-      .tickFormat((d) => " $" + d3.format(".1s")(d));
+
+      .tickFormat((d) => d3.format("$,.2s")(d));
     svg
       .select(".y-axis")
       .attr("font-family", "Inter")
       .attr("font-size", "1rem")
-      .attr("color", "grey")
+      .attr("color", "black")
       .call(yAxis);
 
-    var myArea = d3
-      .area()
+    // var myArea = d3
+    //   .area()
+    //   .x((value, index) => xScale(index))
+    //   .y0(height)
+    //   .y1((value) => yScale(value.GDP))
+    //   .curve(d3.curveCardinal);
+
+    // svg
+    //   .selectAll(".area")
+    //   .data([data])
+    //   .join("path")
+    //   .attr("class", "area")
+    //   .transition()
+    //   .attr("d", myArea)
+    //   .attr("fill", "blue");
+
+    svg
+      .selectAll(".bar")
+      .data(data)
+      .join("rect")
+      .transition()
+      .attr("class", "bar")
+      .attr("fill", "#0096FF")
+      .attr("x", (value, index) => xScale(index))
+      .attr("y", (value) => yScale(value.GDP))
+      .attr("width", xScale.bandwidth())
+      .attr("height", (value) => height - yScale(value.GDP));
+
+    const myLine = d3
+      .line()
       .x((value, index) => xScale(index))
-      .y0(height)
-      .y1((value) => yScale(value.GDP))
+      .y((value) => yScale(value.GDP))
       .curve(d3.curveCardinal);
 
     svg
-      .selectAll(".area")
+      .selectAll(".line")
       .data([data])
       .join("path")
-      .attr("class", "area")
       .transition()
-      .attr("d", myArea)
-      .attr("fill", "blue");
+      .attr("class", "line")
+      .attr("d", myLine)
+      .attr("fill", "none")
+      .attr("stroke", "blue")
+      .attr("stroke-width", 4);
   }, [data]);
 
   useEffect(() => {
