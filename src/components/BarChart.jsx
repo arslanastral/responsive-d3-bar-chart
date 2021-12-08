@@ -22,6 +22,8 @@ const AnimatedSpan = styled.span`
 
 const ChartSvg = styled.svg`
   /* background: #eee; */
+  animation: fadeIn;
+  animation-duration: 1s;
   overflow: visible !important;
   margin-left: 40px;
 `;
@@ -109,14 +111,32 @@ const BarChart = () => {
       .selectAll(".bar")
       .data(data)
       .join("rect")
-
       .attr("class", "bar")
       .style("transform", "scale(1,-1)")
-      // .attr("ry", 5)
-      // .attr("ry", 5)
+      .attr("rx", 1)
       .attr("x", (value, index) => xScale(index))
       .attr("y", -height)
       .attr("width", xScale.bandwidth())
+      .on("mouseenter", (event, value) => {
+        const index = svg.selectAll(".bar").nodes().indexOf(event.target);
+
+        svg
+          .selectAll(".info-tooltip")
+          .data([value.GDP])
+          .join((enter) =>
+            enter.append("text").attr("y", yScale(value.GDP) - 4)
+          )
+          .attr("class", "info-tooltip")
+          .text(d3.format("$,.2s")(value.GDP))
+          .attr("font-family", "Inter")
+          .attr("font-size", "1.5rem")
+          .attr("x", xScale(index) + xScale.bandwidth() / 2)
+          .attr("text-anchor", "middle")
+          .transition()
+          .attr("y", yScale(value.GDP) - 8)
+          .attr("opacity", 1);
+      })
+      .on("mouseleave", () => svg.select(".info-tooltip").remove())
       .transition()
       .attr("height", (value) => height - yScale(value.GDP))
       .attr("fill", (d) => colorScale(d.GDP));
