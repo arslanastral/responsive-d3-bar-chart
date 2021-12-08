@@ -10,8 +10,14 @@ const BarChartContainer = styled.div`
 
 const Title = styled.h1`
   font-family: "Playfair Display", serif;
-  transition: transform ease-in 0.1s;
+
   font-size: 3rem;
+`;
+
+const AnimatedSpan = styled.span`
+  animation: fadeIn;
+  animation-duration: 2s;
+  color: blue;
 `;
 
 const ChartSvg = styled.svg`
@@ -40,7 +46,12 @@ const BarChart = () => {
       .scaleBand()
       .domain(d3.range(data.length))
       .range([0, width])
-      .padding(0.1);
+      .padding(0.4);
+
+    const colorScale = d3
+      .scaleLinear()
+      .domain([d3.min(data.map((d) => d.GDP)), d3.max(data.map((d) => d.GDP))])
+      .range(["#9696ff", "#1e1fff"]);
 
     const xTimeScale = d3
       .scaleTime()
@@ -56,16 +67,13 @@ const BarChart = () => {
       .range([height, 0])
       .nice();
 
-    const xAxis = d3
-      .axisBottom(xTimeScale)
-
-      .tickPadding(30);
+    const xAxis = d3.axisBottom(xTimeScale).ticks(8).tickPadding(30);
     svg
       .select(".x-axis")
       .style("transform", "translateY(400px)")
       .attr("font-family", "Inter")
       .attr("font-size", "1rem")
-      .attr("color", "black")
+      .attr("color", "#413c3c")
       .call(xAxis);
 
     const yAxis = d3
@@ -78,7 +86,7 @@ const BarChart = () => {
       .select(".y-axis")
       .attr("font-family", "Inter")
       .attr("font-size", "1rem")
-      .attr("color", "black")
+      .attr("color", "#413c3c")
       .call(yAxis);
 
     // var myArea = d3
@@ -101,13 +109,17 @@ const BarChart = () => {
       .selectAll(".bar")
       .data(data)
       .join("rect")
-      .transition()
+
       .attr("class", "bar")
-      .attr("fill", "#0096FF")
+      .style("transform", "scale(1,-1)")
+      // .attr("ry", 5)
+      // .attr("ry", 5)
       .attr("x", (value, index) => xScale(index))
-      .attr("y", (value) => yScale(value.GDP))
+      .attr("y", -height)
       .attr("width", xScale.bandwidth())
-      .attr("height", (value) => height - yScale(value.GDP));
+      .transition()
+      .attr("height", (value) => height - yScale(value.GDP))
+      .attr("fill", (d) => colorScale(d.GDP));
 
     const myLine = d3
       .line()
@@ -119,11 +131,12 @@ const BarChart = () => {
       .selectAll(".line")
       .data([data])
       .join("path")
-      .transition()
+
       .attr("class", "line")
+      .transition()
       .attr("d", myLine)
       .attr("fill", "none")
-      .attr("stroke", "blue")
+      .attr("stroke", "#1abb42")
       .attr("stroke-width", 4);
   }, [data]);
 
@@ -144,7 +157,9 @@ const BarChart = () => {
   return (
     <BarChartContainer>
       <Title>
-        World <span style={{ color: "blue" }}>{currentData.type}</span> in $
+        World{" "}
+        <AnimatedSpan key={currentData.type}>{currentData.type}</AnimatedSpan>{" "}
+        in $
       </Title>
       <br />
       <ChartSvg width={width} height={height} ref={GDPChart}>
