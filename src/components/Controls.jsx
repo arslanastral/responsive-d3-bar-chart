@@ -4,7 +4,7 @@ import styled from "styled-components";
 import { BarChartContext } from "../App";
 
 const ControlsContainer = styled.div`
-  margin-top: 100px;
+  margin-top: 80px;
 `;
 
 const Controls = () => {

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import styled from "styled-components";
 import { BarChartContext } from "../App";
@@ -6,12 +6,14 @@ import { BarChartContext } from "../App";
 const BarChartContainer = styled.div`
   /* background-color: blue; */
   border-radius: 10px;
+  width: clamp(200px, 60%, 800px);
+  height: 400px;
 `;
 
 const Title = styled.h1`
   font-family: "Playfair Display", serif;
 
-  font-size: 3rem;
+  font-size: clamp(2.5rem, 5vw, 3rem);
 `;
 
 const AnimatedSpan = styled.span`
@@ -21,33 +23,37 @@ const AnimatedSpan = styled.span`
 `;
 
 const ChartSvg = styled.svg`
-  /* background: #eee; */
+  width: 100%;
+  height: 100%;
   animation: fadeIn;
   animation-duration: 1s;
   overflow: visible !important;
-  margin-left: 40px;
+`;
+
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const BarChart = () => {
   const { data, setData, currentData } = useContext(BarChartContext);
   const GDPChart = useRef();
 
-  const width = 800;
-  const height = 400;
+  const wrapperRef = useRef();
+  const dimensions = useResizeObserver(wrapperRef);
+
+  console.log(dimensions);
 
   useEffect(() => {
     const svg = d3.select(GDPChart.current);
-
-    // const xScale = d3
-    //   .scaleTime()
-    //   .domain([0, data.length - 1])
-    //   .range([0, width])
-    //   .nice();
+    if (!dimensions) return;
 
     const xScale = d3
       .scaleBand()
       .domain(d3.range(data.length))
-      .range([0, width])
+      .range([0, dimensions.width])
       .padding(0.4);
 
     const colorScale = d3
@@ -61,21 +67,26 @@ const BarChart = () => {
         d3.min(data.map((d) => d.Year)),
         d3.max(data.map((d) => d.Year)),
       ])
-      .range([0, width]);
+      .range([0, dimensions.width]);
 
     const yScale = d3
       .scaleLinear()
       .domain([d3.min(data.map((d) => d.GDP)), d3.max(data.map((d) => d.GDP))])
-      .range([height, 0])
+      .range([dimensions.height, 0])
       .nice();
 
-    const xAxis = d3.axisBottom(xTimeScale).tickPadding(30);
+    const xAxis = d3
+      .axisBottom(xTimeScale)
+      .ticks(Math.max(dimensions.width / 80, 4))
+      .tickPadding(30);
     svg
       .select(".x-axis")
-      .style("transform", "translateY(400px)")
+      .style("transform", `translateY(${dimensions.height}px)`)
       .attr("font-family", "Inter")
       .attr("font-size", "1rem")
       .attr("color", "#413c3c")
+      .transition()
+      .duration(300)
       .call(xAxis);
 
     const yAxis = d3
@@ -113,7 +124,9 @@ const BarChart = () => {
       .select("body")
       .append("div")
       .attr("class", "tooltip")
-      .style("opacity", 0);
+      .style("opacity", 0)
+      .style("left", "0px")
+      .style("top", "0px");
 
     svg
       .selectAll(".bar")
@@ -123,7 +136,7 @@ const BarChart = () => {
       .style("transform", "scale(1,-1)")
       .attr("rx", 1)
       .attr("x", (value, index) => xScale(index))
-      .attr("y", -height)
+      .attr("y", -dimensions.height)
       .attr("width", xScale.bandwidth())
       .on("mouseover", function (event, d) {
         d3.select(this).attr("fill", "greenyellow");
@@ -148,7 +161,7 @@ const BarChart = () => {
         div.transition().duration(500).style("opacity", 0);
       })
       .transition()
-      .attr("height", (value) => height - yScale(value.GDP))
+      .attr("height", (value) => dimensions.height - yScale(value.GDP))
       .attr("fill", (d) => colorScale(d.GDP));
 
     // const myLine = d3
@@ -168,7 +181,13 @@ const BarChart = () => {
     //   .attr("fill", "none")
     //   .attr("stroke", "#1abb42")
     //   .attr("stroke-width", 4);
-  }, [data]);
+
+    console.log("hello");
+
+    return () => {
+      div.remove();
+    };
+  }, [currentData.type, data, dimensions]);
 
   useEffect(() => {
     let parseDate = d3.timeParse("%Y");
@@ -185,19 +204,37 @@ const BarChart = () => {
   }
 
   return (
-    <BarChartContainer>
+    <Wrapper>
       <Title>
         World{" "}
         <AnimatedSpan key={currentData.type}>{currentData.type}</AnimatedSpan>{" "}
         {currentData.type === "GDP Growth" ? "Since 1961" : "in $"}
       </Title>
-      <br />
-      <ChartSvg width={width} height={height} ref={GDPChart}>
-        <g className="x-axis" />
-        <g className="y-axis" />
-      </ChartSvg>
-    </BarChartContainer>
+      <BarChartContainer ref={wrapperRef}>
+        <ChartSvg ref={GDPChart}>
+          <g className="x-axis" />
+          <g className="y-axis" />
+        </ChartSvg>
+      </BarChartContainer>
+    </Wrapper>
   );
+};
+
+const useResizeObserver = (ref) => {
+  const [dimensions, setDimensions] = useState(null);
+  useEffect(() => {
+    const observeTarget = ref.current;
+    const resizeObserver = new ResizeObserver((entries) => {
+      entries.forEach((entry) => {
+        setDimensions(entry.contentRect);
+      });
+    });
+    resizeObserver.observe(observeTarget);
+    return () => {
+      resizeObserver.unobserve(observeTarget);
+    };
+  }, [ref]);
+  return dimensions;
 };
 
 export default BarChart;
