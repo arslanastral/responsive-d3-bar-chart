@@ -53,7 +53,7 @@ const BarChart = () => {
     const colorScale = d3
       .scaleLinear()
       .domain([d3.min(data.map((d) => d.GDP)), d3.max(data.map((d) => d.GDP))])
-      .range(["#9696ff", "#1e1fff"]);
+      .range(["#cfcfff", "#1500ff"]);
 
     const xTimeScale = d3
       .scaleTime()
@@ -65,11 +65,11 @@ const BarChart = () => {
 
     const yScale = d3
       .scaleLinear()
-      .domain([0, d3.max(data.map((d) => d.GDP))])
+      .domain([d3.min(data.map((d) => d.GDP)), d3.max(data.map((d) => d.GDP))])
       .range([height, 0])
       .nice();
 
-    const xAxis = d3.axisBottom(xTimeScale).ticks(8).tickPadding(30);
+    const xAxis = d3.axisBottom(xTimeScale).tickPadding(30);
     svg
       .select(".x-axis")
       .style("transform", "translateY(400px)")
@@ -80,11 +80,12 @@ const BarChart = () => {
 
     const yAxis = d3
       .axisLeft(yScale)
-      .ticks(7)
-
+      .ticks(8)
       .tickPadding(30)
 
-      .tickFormat((d) => d3.format("$,.2s")(d));
+      .tickFormat((d) =>
+        currentData.type === "GDP Growth" ? d + "%" : d3.format("$,.2s")(d)
+      );
     svg
       .select(".y-axis")
       .attr("font-family", "Inter")
@@ -133,7 +134,11 @@ const BarChart = () => {
               d.Year
             )}</span>` +
               "<br/>" +
-              d3.format("$,.2s")(d.GDP)
+              `${
+                currentData.type === "GDP Growth"
+                  ? d.GDP.toPrecision(3) + "%"
+                  : d3.format("$,.2s")(d.GDP)
+              }`
           )
           .style("left", event.pageX - 40 + "px")
           .style("top", event.pageY - 100 + "px");
@@ -149,14 +154,14 @@ const BarChart = () => {
     // const myLine = d3
     //   .line()
     //   .x((value, index) => xScale(index))
-    //   .y((value) => yScale(value.GDP))
-    //   .curve(d3.curveCardinal);
+    //   .y((value) => yScale(value.GDP));
+    // // .curve(d3.curveCardinal);
 
     // svg
     //   .selectAll(".line")
     //   .data([data])
     //   .join("path")
-
+    //   .style("transform", "translateX(0.1px)")
     //   .attr("class", "line")
     //   .transition()
     //   .attr("d", myLine)
@@ -184,7 +189,7 @@ const BarChart = () => {
       <Title>
         World{" "}
         <AnimatedSpan key={currentData.type}>{currentData.type}</AnimatedSpan>{" "}
-        in $
+        {currentData.type === "GDP Growth" ? "Since 1961" : "in $"}
       </Title>
       <br />
       <ChartSvg width={width} height={height} ref={GDPChart}>
