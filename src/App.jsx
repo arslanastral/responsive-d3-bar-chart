@@ -46,10 +46,17 @@ function BarChartProvider({ children }) {
         "https://gist.githubusercontent.com/arslanastral/07260a81a2a1a0f6f811ac16f573e3bc/raw/93e7503fb0e3b807454094105565f695fb5c995b/world-gdp.csv",
       isActive: true,
     },
+
     {
       type: "GDP Per Capita",
       URL:
         "https://gist.githubusercontent.com/arslanastral/ad5735653b14aa17d51c3560d7990de3/raw/4d792fbe9285fcf7bb6dcf5a32e80289ca7c7013/world-gdp-per-capita.csv",
+      isActive: false,
+    },
+    {
+      type: "GDP Growth",
+      URL:
+        "https://gist.githubusercontent.com/arslanastral/4aaed77039e8a0bcc6756ec5e13bd2bf/raw/fb834f153b72cfce95ab92b708d5b0a0c3b8d02c/world-gdp-growth.csv",
       isActive: false,
     },
   ]);
