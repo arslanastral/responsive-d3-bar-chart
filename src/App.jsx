@@ -11,6 +11,7 @@ const AppContainer = styled.div`
   align-items: center;
   min-height: 100vh;
   min-width: 100vw;
+  /* padding: 0 200px; */
 `;
 
 function App() {
