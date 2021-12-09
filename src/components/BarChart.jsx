@@ -6,13 +6,13 @@ import { BarChartContext } from "../App";
 const BarChartContainer = styled.div`
   /* background-color: blue; */
   border-radius: 10px;
-  width: clamp(200px, 60%, 800px);
+  width: clamp(200px, 60vw, 800px);
   height: 400px;
 `;
 
 const Title = styled.h1`
   font-family: "Playfair Display", serif;
-
+  margin-bottom: 4rem;
   font-size: clamp(2.5rem, 5vw, 3rem);
 `;
 
@@ -78,7 +78,7 @@ const BarChart = () => {
     const xAxis = d3
       .axisBottom(xTimeScale)
       .ticks(Math.max(dimensions.width / 80, 4))
-      .tickPadding(30);
+      .tickPadding(20);
     svg
       .select(".x-axis")
       .style("transform", `translateY(${dimensions.height}px)`)
@@ -92,7 +92,7 @@ const BarChart = () => {
     const yAxis = d3
       .axisLeft(yScale)
       .ticks(8)
-      .tickPadding(30)
+      .tickPadding(20)
 
       .tickFormat((d) =>
         currentData.type === "GDP Growth" ? d + "%" : d3.format("$,.2s")(d)
