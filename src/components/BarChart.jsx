@@ -81,6 +81,7 @@ const BarChart = () => {
     const yAxis = d3
       .axisLeft(yScale)
       .ticks(7)
+
       .tickPadding(30)
 
       .tickFormat((d) => d3.format("$,.2s")(d));
@@ -107,6 +108,12 @@ const BarChart = () => {
     //   .attr("d", myArea)
     //   .attr("fill", "blue");
 
+    let div = d3
+      .select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
     svg
       .selectAll(".bar")
       .data(data)
@@ -117,47 +124,41 @@ const BarChart = () => {
       .attr("x", (value, index) => xScale(index))
       .attr("y", -height)
       .attr("width", xScale.bandwidth())
-      .on("mouseenter", (event, value) => {
-        const index = svg.selectAll(".bar").nodes().indexOf(event.target);
-
-        svg
-          .selectAll(".info-tooltip")
-          .data([value.GDP])
-          .join((enter) =>
-            enter.append("text").attr("y", yScale(value.GDP) - 4)
+      .on("mouseover", function (event, d) {
+        div.transition().duration(200).style("opacity", 1);
+        div
+          .html(
+            `<span style="font-weight:600">${d3.timeFormat("%Y")(
+              d.Year
+            )}</span>` +
+              "<br/>" +
+              d3.format("$,.2s")(d.GDP)
           )
-          .attr("class", "info-tooltip")
-          .text(d3.format("$,.2s")(value.GDP))
-          .attr("font-family", "Inter")
-          .attr("font-size", "1.5rem")
-          .attr("x", xScale(index) + xScale.bandwidth() / 2)
-          .attr("text-anchor", "middle")
-          .transition()
-          .attr("y", yScale(value.GDP) - 8)
-          .attr("opacity", 1);
+          .style("left", event.pageX - 40 + "px")
+          .style("top", event.pageY - 100 + "px");
       })
-      .on("mouseleave", () => svg.select(".info-tooltip").remove())
+      .on("mouseout", () => div.transition().duration(500).style("opacity", 0))
       .transition()
       .attr("height", (value) => height - yScale(value.GDP))
       .attr("fill", (d) => colorScale(d.GDP));
 
-    const myLine = d3
-      .line()
-      .x((value, index) => xScale(index))
-      .y((value) => yScale(value.GDP))
-      .curve(d3.curveCardinal);
+    // const myLine = d3
+    //   .line()
+    //   .x((value, index) => xScale(index))
+    //   .y((value) => yScale(value.GDP))
+    //   .curve(d3.curveCardinal);
 
-    svg
-      .selectAll(".line")
-      .data([data])
-      .join("path")
+    // svg
+    //   .selectAll(".line")
+    //   .data([data])
+    //   .join("path")
 
-      .attr("class", "line")
-      .transition()
-      .attr("d", myLine)
-      .attr("fill", "none")
-      .attr("stroke", "#1abb42")
-      .attr("stroke-width", 4);
+    //   .attr("class", "line")
+    //   .transition()
+    //   .attr("d", myLine)
+    //   .attr("fill", "none")
+    //   .attr("stroke", "#1abb42")
+    //   .attr("stroke-width", 4);
   }, [data]);
 
   useEffect(() => {
