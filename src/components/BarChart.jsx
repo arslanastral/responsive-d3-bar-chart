@@ -4,7 +4,6 @@ import styled from "styled-components";
 import { BarChartContext } from "../App";
 
 const BarChartContainer = styled.div`
-  /* background-color: blue; */
   border-radius: 10px;
   width: clamp(200px, 60vw, 800px);
   height: 400px;
@@ -12,7 +11,8 @@ const BarChartContainer = styled.div`
 
 const Title = styled.h1`
   font-family: "Playfair Display", serif;
-  margin-bottom: 4rem;
+  margin: 0 1rem 4rem 1rem;
+  line-height: 45px;
   font-size: clamp(2.5rem, 5vw, 3rem);
 `;
 
@@ -52,7 +52,7 @@ const BarChart = () => {
 
     const xScale = d3
       .scaleBand()
-      .domain(d3.range(data.length))
+      .domain(data.map((d) => d.Year))
       .range([0, dimensions.width])
       .padding(0.4);
 
@@ -61,23 +61,22 @@ const BarChart = () => {
       .domain([d3.min(data.map((d) => d.GDP)), d3.max(data.map((d) => d.GDP))])
       .range(["#cfcfff", "#1500ff"]);
 
-    const xTimeScale = d3
-      .scaleTime()
-      .domain([
-        d3.min(data.map((d) => d.Year)),
-        d3.max(data.map((d) => d.Year)),
-      ])
-      .range([0, dimensions.width]);
-
     const yScale = d3
       .scaleLinear()
       .domain([d3.min(data.map((d) => d.GDP)), d3.max(data.map((d) => d.GDP))])
       .range([dimensions.height, 0])
       .nice();
-
+    console.log(xScale.domain());
     const xAxis = d3
-      .axisBottom(xTimeScale)
-      .ticks(Math.max(dimensions.width / 80, 4))
+      .axisBottom(xScale)
+      .tickValues(
+        xScale.domain().filter(function (d, i) {
+          const MIN_WIDTH = 70;
+          let skip = Math.round((MIN_WIDTH * data.length) / dimensions.width);
+          skip = Math.max(5, skip);
+          return !(i % skip);
+        })
+      )
       .tickPadding(20);
     svg
       .select(".x-axis")
@@ -104,22 +103,6 @@ const BarChart = () => {
       .attr("color", "#413c3c")
       .call(yAxis);
 
-    // var myArea = d3
-    //   .area()
-    //   .x((value, index) => xScale(index))
-    //   .y0(height)
-    //   .y1((value) => yScale(value.GDP))
-    //   .curve(d3.curveCardinal);
-
-    // svg
-    //   .selectAll(".area")
-    //   .data([data])
-    //   .join("path")
-    //   .attr("class", "area")
-    //   .transition()
-    //   .attr("d", myArea)
-    //   .attr("fill", "blue");
-
     let div = d3
       .select("body")
       .append("div")
@@ -135,7 +118,7 @@ const BarChart = () => {
       .attr("class", "bar")
       .style("transform", "scale(1,-1)")
       .attr("rx", 1)
-      .attr("x", (value, index) => xScale(index))
+      .attr("x", (value) => xScale(value.Year))
       .attr("y", -dimensions.height)
       .attr("width", xScale.bandwidth())
       .on("mouseover", function (event, d) {
@@ -143,14 +126,16 @@ const BarChart = () => {
         div.transition().duration(200).style("opacity", 1);
         div
           .html(
-            `<span style="font-weight:600">${d3.timeFormat("%Y")(
-              d.Year
-            )}</span>` +
+            `<span style="font-size:1rem">${d.Year}</span>` +
               "<br/>" +
               `${
                 currentData.type === "GDP Growth"
-                  ? d.GDP.toPrecision(3) + "%"
-                  : d3.format("$,.2s")(d.GDP)
+                  ? `<span style="font-weight:600;font-size:1.2rem">${
+                      d.GDP.toPrecision(3) + "%"
+                    }</span>`
+                  : `<span style="font-weight:600;font-size:1.2rem">${d3.format(
+                      "$,.2s"
+                    )(d.GDP)}</span>`
               }`
           )
           .style("left", event.pageX - 40 + "px")
@@ -190,9 +175,8 @@ const BarChart = () => {
   }, [currentData.type, data, dimensions]);
 
   useEffect(() => {
-    let parseDate = d3.timeParse("%Y");
     const row = (d) => {
-      d.Year = parseDate(d.Year);
+      d.Year = +d.Year;
       d.GDP = +d.GDP;
       return d;
     };
