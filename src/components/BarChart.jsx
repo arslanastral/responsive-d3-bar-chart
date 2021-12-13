@@ -7,6 +7,7 @@ const BarChartContainer = styled.div`
   border-radius: 10px;
   width: clamp(200px, 60vw, 800px);
   height: 400px;
+  margin-left: -35px;
 `;
 
 const Title = styled.h1`
@@ -66,9 +67,10 @@ const BarChart = () => {
       .domain([d3.min(data.map((d) => d.GDP)), d3.max(data.map((d) => d.GDP))])
       .range([dimensions.height, 0])
       .nice();
-    console.log(xScale.domain());
+
     const xAxis = d3
       .axisBottom(xScale)
+
       .tickValues(
         xScale.domain().filter(function (d, i) {
           const MIN_WIDTH = 70;
@@ -80,28 +82,38 @@ const BarChart = () => {
       .tickPadding(20);
     svg
       .select(".x-axis")
-      .style("transform", `translateY(${dimensions.height}px)`)
+      .style("transform", `translate(50px,${dimensions.height}px)`)
       .attr("font-family", "Inter")
       .attr("font-size", "1rem")
-      .attr("color", "#413c3c")
+      .attr("color", "#615b5b")
       .transition()
       .duration(300)
       .call(xAxis);
 
+    svg.select(".x-axis").select("path").remove(); //removes outer ticks
+
     const yAxis = d3
       .axisLeft(yScale)
       .ticks(8)
-      .tickPadding(20)
 
+      .tickSize(-dimensions.width - 50)
       .tickFormat((d) =>
         currentData.type === "GDP Growth" ? d + "%" : d3.format("$,.2s")(d)
       );
     svg
       .select(".y-axis")
       .attr("font-family", "Inter")
-      .attr("font-size", "1rem")
-      .attr("color", "#413c3c")
-      .call(yAxis);
+      .attr("font-size", "0.9rem")
+      .attr("color", "#615b5b")
+      .call(yAxis)
+      .call((g) => g.select(".domain").remove())
+      .call((g) =>
+        g
+          .selectAll(".tick:not(:first-of-type) line")
+          .attr("stroke-opacity", 0.5)
+          .attr("stroke-dasharray", "2,2")
+      )
+      .call((g) => g.selectAll(".tick text").attr("x", 35).attr("dy", -7));
 
     let div = d3
       .select("body")
@@ -118,7 +130,7 @@ const BarChart = () => {
       .attr("class", "bar")
       .style("transform", "scale(1,-1)")
       .attr("rx", 1)
-      .attr("x", (value) => xScale(value.Year))
+      .attr("x", (value) => xScale(value.Year) + 50)
       .attr("y", -dimensions.height)
       .attr("width", xScale.bandwidth())
       .on("mouseover", function (event, d) {
@@ -148,26 +160,6 @@ const BarChart = () => {
       .transition()
       .attr("height", (value) => dimensions.height - yScale(value.GDP))
       .attr("fill", (d) => colorScale(d.GDP));
-
-    // const myLine = d3
-    //   .line()
-    //   .x((value, index) => xScale(index))
-    //   .y((value) => yScale(value.GDP));
-    // // .curve(d3.curveCardinal);
-
-    // svg
-    //   .selectAll(".line")
-    //   .data([data])
-    //   .join("path")
-    //   .style("transform", "translateX(0.1px)")
-    //   .attr("class", "line")
-    //   .transition()
-    //   .attr("d", myLine)
-    //   .attr("fill", "none")
-    //   .attr("stroke", "#1abb42")
-    //   .attr("stroke-width", 4);
-
-    console.log("hello");
 
     return () => {
       div.remove();
