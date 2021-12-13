@@ -45,8 +45,6 @@ const BarChart = () => {
   const wrapperRef = useRef();
   const dimensions = useResizeObserver(wrapperRef);
 
-  console.log(dimensions);
-
   useEffect(() => {
     const svg = d3.select(GDPChart.current);
     if (!dimensions) return;
