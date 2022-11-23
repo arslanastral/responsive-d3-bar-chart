@@ -1,15 +1,15 @@
-# Bar Chart ✔
+# 📊 D3 Bar Chart
 
 Live Demo: [https://thebarchart.netlify.app/](https://thebarchart.netlify.app/)
 
-Bar Chart for freeCodeCamp Project.
+A responsive bar chart built using D3.js and React.
 
 ## Local Development:
 
-- `git clone` this repo and `cd` into `04_Data-Visualization/01_Bar-Chart` directory and enter below commands
+- `git clone` this repo and `cd` into it and then:
 - `npm install`
 - `npm run dev` (To start development server)
 
 ## Preview:
 
-![](https://raw.githubusercontent.com/arslanastral/freeCodeCamp-Projects/main/04_Data-Visualization/01_Bar-Chart/barchart-preview.png)
+![responsive-d3-bar-chart](https://raw.githubusercontent.com/arslanastral/responsive-d3-bar-chart/main/barchart-preview.png)
